@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import '/services/locationService.dart'; // Zorg ervoor dat je de juiste import hebt voor je LocationService
+import '/services/locationService.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LocationTracker extends StatefulWidget {
   const LocationTracker({super.key});
@@ -68,6 +69,14 @@ class _LocationTrackerState extends State<LocationTracker> {
     _locationService.stopTracking();
   }
 
+  void saveTripToFirestore() async {
+  await FirebaseFirestore.instance.collection('trips').add({
+    'startTime': Timestamp.now(),
+    'endTime': Timestamp.now(),
+    'distance': 10.5, // voorbeelddata
+  });
+ }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,6 +94,10 @@ class _LocationTrackerState extends State<LocationTracker> {
               onPressed: _isTracking ? _stopTracking : _startTracking,
               child: Text(_isTracking ? 'Stop met meten' : 'Start met meten'),
             ),
+            ElevatedButton(
+            onPressed: saveTripToFirestore,
+            child: const Text('Sla rit op'),
+          ),
           ],
         ),
       ),
