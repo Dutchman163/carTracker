@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '/services/locationService.dart'; 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 class LocationTracker extends StatefulWidget {
   const LocationTracker({super.key});
@@ -43,14 +44,14 @@ class _LocationTrackerState extends State<LocationTracker> {
 
   void _startTracking() async {
     await _checkPermissions();
-
+    await startForegroundTask();
     setState(() {
       _isTracking = true;
     });
 
     final positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.best,
+        accuracy: LocationAccuracy.bestForNavigation,
         distanceFilter: 5, // Update elke 5 meter
       ),
     );
@@ -66,15 +67,28 @@ class _LocationTrackerState extends State<LocationTracker> {
     setState(() {
       _isTracking = false;
     });
+     FlutterForegroundTask.stopService();
     _locationService.stopTracking();
   }
 
   void saveTripToFirestore() async {
+    var total = {(_locationService.getTotalDistance() / 1000).toStringAsFixed(2)};
+    if (total == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Geen afstand om op te slaan')),
+      );
+      return;
+    }
   await FirebaseFirestore.instance.collection('trips').add({
+    
     'startTime': Timestamp.now(),
     'endTime': Timestamp.now(),
-    'distance': 10.5, // voorbeelddata
+    'distance':  total,
   });
+    setState(() {
+      _isTracking = false;
+    });
+    _locationService.stopTracking();
  }
 
   @override
@@ -103,4 +117,37 @@ class _LocationTrackerState extends State<LocationTracker> {
       ),
     );
   }
+
+Future<void> startForegroundTask() async {
+ FlutterForegroundTask.init(
+  androidNotificationOptions: AndroidNotificationOptions(
+    channelId: 'gps_tracking_channel',
+    channelName: 'GPS Tracking',
+    channelDescription: 'Deze service houdt je locatie bij.',
+    channelImportance: NotificationChannelImportance.LOW,
+    priority: NotificationPriority.LOW,
+    iconData: NotificationIconData(
+      resType: ResourceType.mipmap,
+      resPrefix: ResourcePrefix.ic,
+      name: 'launcher', // Zorg dat dit icoon bestaat
+    ),
+  ),
+  iosNotificationOptions: const IOSNotificationOptions(
+    showNotification: true,
+    playSound: false,
+  ),
+  foregroundTaskOptions: const ForegroundTaskOptions(
+    interval: 5000,
+    isOnceEvent: false,
+    allowWakeLock: true,
+    allowWifiLock: true,
+  ),
+);
+
+
+  await FlutterForegroundTask.startService(
+    notificationTitle: 'Locatie wordt bijgehouden',
+    notificationText: 'Je afstand wordt gemeten...',
+  );
+}
 }

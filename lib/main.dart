@@ -1,3 +1,5 @@
+import 'package:car_tracer/login/loginScreen.dart';
+import 'package:car_tracer/register/registerScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
@@ -7,6 +9,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (defaultTargetPlatform == TargetPlatform.windows) {
     await Firebase.initializeApp(
+      //TODO: Make this private
       options: const FirebaseOptions (
         apiKey: "AIzaSyBTRWm5GF3egLBw71JoosJODS9c8I2_go4",
         authDomain: "cartracker-ecaee.firebaseapp.com",
@@ -25,10 +28,11 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: LocationTracker(), 
+      home: LoginScreen(),  
     );
   }
 }
