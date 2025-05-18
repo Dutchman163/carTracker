@@ -72,7 +72,8 @@ class _LocationTrackerState extends State<LocationTracker> {
   }
 
   void saveTripToFirestore() async {
-    var total = {(_locationService.getTotalDistance() / 1000).toStringAsFixed(2)};
+    var rideValue = {(_locationService.getTotalDistance() / 1000).toStringAsFixed(2)};
+    var total = double.parse(rideValue.first);
     if (total == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Geen afstand om op te slaan')),
