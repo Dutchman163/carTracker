@@ -1,6 +1,9 @@
+import 'package:car_tracer/drawer/appDrawer';
+import 'package:car_tracer/services/locationService.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '/trackers/locationTracker.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -20,7 +23,8 @@ class _LoginScreenState extends State<LoginScreen> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
-      Navigator.pushReplacement( // 👈 vervangt het login-scherm
+      addUserToFirestore();
+      Navigator.pushReplacement( 
         context,
         MaterialPageRoute(builder: (context) => const LocationTracker()),
       );
@@ -35,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Inloggen')),
+      drawer: const  AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -58,4 +63,19 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+}
+
+void addUserToFirestore() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDocRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final docSnapshot = await userDocRef.get();
+
+      if (!docSnapshot.exists) {
+        await userDocRef.set({
+          'createdAt': FieldValue.serverTimestamp(),
+          'total': 0,
+        });
+      }
+    }
 }
