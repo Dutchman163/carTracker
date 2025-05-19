@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import '/services/locationService.dart'; 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:car_tracer/drawer/appDrawer';
 
 class LocationTracker extends StatefulWidget {
   const LocationTracker({super.key});
@@ -72,7 +73,8 @@ class _LocationTrackerState extends State<LocationTracker> {
   }
 
   void saveTripToFirestore() async {
-    var total = {(_locationService.getTotalDistance() / 1000).toStringAsFixed(2)};
+    var rideValue = {(_locationService.getTotalDistance() / 1000).toStringAsFixed(2)};
+    var total = double.parse(rideValue.first);
     if (total == 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Geen afstand om op te slaan')),
@@ -95,6 +97,7 @@ class _LocationTrackerState extends State<LocationTracker> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Afstandstracker')),
+      drawer: const  AppDrawer(),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
