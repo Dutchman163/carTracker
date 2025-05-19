@@ -1,4 +1,7 @@
+import 'package:car_tracer/cars/selectedCars.dart';
 import 'package:car_tracer/drawer/appDrawer';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
@@ -18,6 +21,7 @@ class _Cars extends State<Cars> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SelectedCarWidget()
           ],
         ),
       ),
