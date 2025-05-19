@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../register/registerScreen.dart';
 import '../trackers/locationTracker.dart';
+import '../cars/cars.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key});
@@ -22,28 +23,21 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.login),
-            title: Text('Login'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.app_registration),
-            title: Text('Registreren'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const RegisterScreen()),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.location_on),
             title: Text('Tracker'),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const LocationTracker()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.app_registration),
+            title: Text('Auto'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Cars()),
               );
             },
           ),
