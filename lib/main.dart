@@ -11,7 +11,7 @@ void main() async {
     await Firebase.initializeApp(
       //TODO: Make this private
       options: const FirebaseOptions (
-        apiKey: "AIzaSyBTRWm5GF3egLBw71JoosJODS9c8I2_go4",
+        apiKey: "",
         authDomain: "cartracker-ecaee.firebaseapp.com",
         projectId: "cartracker-ecaee",
         storageBucket: "cartracker-ecaee.firebasestorage.app",
