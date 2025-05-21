@@ -1,17 +1,18 @@
 import 'package:car_tracer/login/loginScreen.dart';
-import 'package:car_tracer/register/registerScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
-import 'trackers/locationTracker.dart'; // Import de Locat
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() async {
+void main() async {     
   WidgetsFlutterBinding.ensureInitialized();
+ await dotenv.load();
+  final apiKey = dotenv.env['GOOGLE_API_KEY']!; 
+  
   if (defaultTargetPlatform == TargetPlatform.windows) {
     await Firebase.initializeApp(
-      //TODO: Make this private
-      options: const FirebaseOptions (
-        apiKey: "",
+      options:  FirebaseOptions (
+        apiKey: apiKey,
         authDomain: "cartracker-ecaee.firebaseapp.com",
         projectId: "cartracker-ecaee",
         storageBucket: "cartracker-ecaee.firebasestorage.app",
@@ -20,7 +21,7 @@ void main() async {
       )
     );
   } else {
-    await Firebase.initializeApp(); // Voor Android/iOS
+    await Firebase.initializeApp(); 
   }
   runApp(const MyApp());
 }
