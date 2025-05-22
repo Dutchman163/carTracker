@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '/services/locationService.dart'; 
@@ -81,12 +82,29 @@ class _LocationTrackerState extends State<LocationTracker> {
       );
       return;
     }
+  final userId = FirebaseAuth.instance.currentUser?.uid;
+  if (userId == null) return;
   await FirebaseFirestore.instance.collection('trips').add({
     
     'startTime': Timestamp.now(),
     'endTime': Timestamp.now(),
     'distance':  total,
+    'user': FirebaseFirestore.instance.collection('users').doc(userId),
   });
+
+  final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+  final carRef = userDoc.data()?['car'] as DocumentReference?;
+    if (carRef != null) {
+    final carDoc = await carRef.get();
+    final carData = carDoc.data() as Map<String, dynamic>;
+    final currentDistance = (carData['totalDistance'] ?? 0).toDouble();
+
+    // Voeg afstand toe aan de auto
+    await carRef.update({
+      'totalDistance': currentDistance + total,
+    });
+  }
+
     setState(() {
       _isTracking = false;
     });
