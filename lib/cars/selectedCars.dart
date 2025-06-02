@@ -14,6 +14,7 @@ class _SelectedCarWidgetState extends State<SelectedCarWidget> {
   String? _carName;
   bool _isLoading = true;
   bool _hasCar = false;
+  double _distance = 0; 
 
   @override
   void initState() {
@@ -31,11 +32,13 @@ class _SelectedCarWidgetState extends State<SelectedCarWidget> {
     final userSnapshot = await userDocRef.get();
     final carRef = userSnapshot.data()?['car'];
 
+
     if (carRef != null && carRef is DocumentReference) {
       final carSnapshot = await carRef.get();
       final carData = carSnapshot.data() as Map<String, dynamic>;
       setState(() {
         _carName = carData['name'];
+        _distance = carData['totalDistance'] ?? 0;
         _hasCar = true;
         _isLoading = false;
       });
@@ -75,7 +78,9 @@ class _SelectedCarWidgetState extends State<SelectedCarWidget> {
     }
 
     if (_hasCar) {
-      return Text('Gekozen auto: $_carName');
+      return Text('Gekozen auto: $_carName'
+          '\nTotale afstand: $_distance km',
+          style: const TextStyle(fontSize: 18));
     }
 
     return Column(
