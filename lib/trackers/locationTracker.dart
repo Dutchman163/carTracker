@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '/services/locationService.dart'; 
+import '/user/userService.dart'; 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:car_tracer/drawer/appDrawer';
@@ -15,6 +16,7 @@ class LocationTracker extends StatefulWidget {
 
 class _LocationTrackerState extends State<LocationTracker> {
   final LocationService _locationService = LocationService();
+  final UserService _userService = UserService();
   bool _isTracking = false;
 
   @override
@@ -123,6 +125,22 @@ class _LocationTrackerState extends State<LocationTracker> {
             Text(
               'Totaal: ${(_locationService.getTotalDistance() / 1000).toStringAsFixed(2)} km',
               style: const TextStyle(fontSize: 24),
+            ),
+                      FutureBuilder<double>(
+            future: _userService.GetTotalMiles(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Fout: ${snapshot.error}');
+              } else {
+                final total = snapshot.data ?? 0.0;
+                return Text(
+                  'Totaal km: ${total.toStringAsFixed(2)} km',
+                  style: const TextStyle(fontSize: 24),
+                );
+              }
+            },
             ),
             const SizedBox(height: 30),
             ElevatedButton(
