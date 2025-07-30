@@ -1,4 +1,5 @@
 import 'package:car_tracer/login/loginScreen.dart';
+import 'package:car_tracer/splashScreen/splashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
@@ -19,7 +20,7 @@ void main() async {
         messagingSenderId: "59916178907",
         appId: "1:59916178907:web:e468810538bb3b7afa43fe"
       )
-    );
+    );  
   } else {
     await Firebase.initializeApp(); 
   }
@@ -33,7 +34,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      home: LoginScreen(),  
+      home: SplashScreen(),  
     );
   }
 }
