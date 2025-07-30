@@ -168,7 +168,7 @@ Future<void> startForegroundTask() async {
     iconData: NotificationIconData(
       resType: ResourceType.mipmap,
       resPrefix: ResourcePrefix.ic,
-      name: 'launcher', // Zorg dat dit icoon bestaat
+      name: 'launcher', 
     ),
   ),
   iosNotificationOptions: const IOSNotificationOptions(
