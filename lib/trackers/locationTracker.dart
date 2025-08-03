@@ -1,3 +1,4 @@
+import 'package:car_tracer/task/backgroundTask.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -187,6 +188,7 @@ Future<void> startForegroundTask() async {
   await FlutterForegroundTask.startService(
     notificationTitle: 'Locatie wordt bijgehouden',
     notificationText: 'Je afstand wordt gemeten...',
-  );
-}
+    callback: startCallback,
+    );
+  }
 }
