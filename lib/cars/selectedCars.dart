@@ -71,6 +71,40 @@ class _SelectedCarWidgetState extends State<SelectedCarWidget> {
     });
   }
 
+  
+Future<void> _tankBeurt() async {
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return;
+
+  final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+  final userDoc = await userRef.get();
+  final userData = userDoc.data() as Map<String, dynamic>;
+
+  final carRef = userData['car'] as DocumentReference?;
+  if (carRef == null) return;
+
+  final carDoc = await carRef.get();
+  final carData = carDoc.data() as Map<String, dynamic>;
+
+  final userDistance = (userData['total'] ?? 0).toDouble();
+  final carDistance = (carData['totalDistance'] ?? 0).toDouble();
+
+  // Nieuwe waarden
+  final newUserDistance = userDistance - carDistance; // kan negatief worden
+  const newCarDistance = 0.0;
+
+  // Update auto
+  await carRef.update({'totalDistance': newCarDistance});
+
+  // Update gebruiker
+  await userRef.update({'total': newUserDistance});
+
+  setState(() {
+    _distance = newCarDistance;
+  });
+}
+
+
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
@@ -78,9 +112,20 @@ class _SelectedCarWidgetState extends State<SelectedCarWidget> {
     }
 
     if (_hasCar) {
-      return Text('Gekozen auto: $_carName'
-          '\nTotale afstand: $_distance km',
-          style: const TextStyle(fontSize: 18));
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Gekozen auto: $_carName'
+              '\nTotale afstand: $_distance km',
+              style: const TextStyle(fontSize: 18)),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            onPressed: _tankBeurt,
+            icon: const Icon(Icons.local_gas_station),
+            label: const Text('Tanken'),
+          ),
+        ],
+      );
     }
 
     return Column(

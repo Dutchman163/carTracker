@@ -22,7 +22,7 @@ class _LocationTrackerState extends State<LocationTracker> {
 
   @override
   void dispose() {
-    _locationService.stopTracking(); // Stop tracking bij verlaten
+    _locationService.stopTracking(); 
     super.dispose();
   }
 
@@ -57,13 +57,12 @@ class _LocationTrackerState extends State<LocationTracker> {
     final positionStream = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: 5, // Update elke 5 meter
+        distanceFilter: 5, 
       ),
     );
 
     _locationService.startTracking(positionStream, (totalDistance) {
       setState(() {
-        // Update de UI met de nieuwe afstand
       });
     });
   }
@@ -87,6 +86,7 @@ class _LocationTrackerState extends State<LocationTracker> {
     }
   final userId = FirebaseAuth.instance.currentUser?.uid;
   if (userId == null) return;
+  final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
   await FirebaseFirestore.instance.collection('trips').add({
     
     'startTime': Timestamp.now(),
@@ -102,11 +102,16 @@ class _LocationTrackerState extends State<LocationTracker> {
     final carData = carDoc.data() as Map<String, dynamic>;
     final currentDistance = (carData['totalDistance'] ?? 0).toDouble();
 
-    // Voeg afstand toe aan de auto
     await carRef.update({
       'totalDistance': currentDistance + total,
     });
   }
+  final currentUserData = userDoc.data() as Map<String, dynamic>;
+  final currentUserMiles = (currentUserData['total'] ?? 0).toDouble();
+
+  await userRef.update({
+    'total': currentUserMiles + total,
+  });
 
     setState(() {
       _isTracking = false;
